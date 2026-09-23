@@ -1,48 +1,56 @@
-# Mobile AI Automation
+# AI-Assisted Appium Framework
 
-A minimal Java 21, Maven, Appium, and TestNG framework for Sauce Labs My Demo App.
+Android uygulamaları için Java, Maven ve Appium ile hazırlanmış mobil test otomasyonu çalışması. Örnek uygulama **Sauce Labs My Demo App** üzerinde ürün kataloğundan sepete uzanan kullanıcı akışını doğrular.
 
-## Pinned versions
+## Kullanılan araçlar
 
-- Java: 21
-- Maven: 3.9.16
-- Appium Java Client: 10.1.1
-- Selenium Java: 4.43.0
-- TestNG: 7.11.0
-- Maven Compiler Plugin: 3.14.0
-- Maven Surefire Plugin: 3.5.3
+- Java 21 ve Maven
+- Appium 3 ve UiAutomator2 sürücüsü
+- Android SDK, ADB ve Android emülatörü
+- JUnit tabanlı Maven test çalıştırma ve Surefire raporları
+- Appium MCP ile ekran inceleme ve test senaryosu keşfi
 
-Appium Java Client 10.1.1 lists Selenium 4.42.0 and 4.43.0 in its official compatibility matrix. The project pins Selenium 4.43.0 explicitly.
+## Test akışı
 
-## Runtime prerequisites
+1. Uygulamadaki ürün kataloğunu aç.
+2. Bir ürün seç ve **Add to cart** ile sepete ekle.
+3. **View cart** ekranını aç.
+4. Ürün adını, miktarını ve fiyatını kontrol et.
 
-- Appium server at `http://127.0.0.1:4723/`
-- Android device `emulator-5554`
-- UiAutomator2 driver installed in the Appium server
-- Sauce Labs My Demo App installed
+Bu akış emülatörde çalıştırıldı; Maven çıktısında `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` ve `BUILD SUCCESS` görüldü.
 
-The app package and launcher activity were verified on the device:
+## Yerel kurulum
 
-- Package: `com.saucelabs.mydemoapp.android`
-- Activity: `com.saucelabs.mydemoapp.android.view.activities.SplashActivity`
+1. Java 21, Maven, Node.js, Android SDK ve Android emülatörünü kur.
+2. Appium sunucusunu ve Android sürücüsünü hazırla:
 
-## Run
+   ```bash
+   npm install -g appium
+   appium driver install uiautomator2
+   ```
 
-Keep the Appium server and emulator running. End any existing Appium session for `emulator-5554` before starting Maven.
+3. Emülatörü başlat ve `adb devices` ile erişilebilir olduğunu doğrula.
+4. Test edilen uygulamanın emülatörde kurulu olduğundan emin ol. Kullanılan paket: `com.saucelabs.mydemoapp.android.test`.
+5. Ayrı bir terminalde Appium sunucusunu başlat:
 
-```powershell
-& "$env:LOCALAPPDATA\Programs\ApacheMaven\apache-maven-3.9.16\bin\mvn.cmd" test-compile
-& "$env:LOCALAPPDATA\Programs\ApacheMaven\apache-maven-3.9.16\bin\mvn.cmd" -Dtest=ProductDetailsTest test
-```
+   ```bash
+   appium --address 127.0.0.1 --port 4723
+   ```
 
-Settings in `src/test/resources/test.properties` can be overridden with system properties, for example:
+6. Projenin kök dizininde testi çalıştır:
 
-```powershell
-mvn -Dappium.udid=emulator-5554 -Dwait.timeout.seconds=20 test
-```
+   ```bash
+   mvn test
+   ```
 
-Screenshots from failed tests are written to `target/screenshots`. Maven output is written under `target`.
+Test sırasında emülatör penceresini açık tutarak adımları izleyebilirsin. Maven test raporları `target/surefire-reports/` altında oluşur. Proje ekran görüntüsü üretiyorsa bunlar ilgili `screenshots/` klasöründe bulunur.
 
-## Scope
+## AI destekli çalışma
 
-`MOB-002` verifies that the exact product `Sauce Labs Backpack` opens from Products, that the detail name matches, and that Add to cart is visible. It does not add a product to the cart and does not enter checkout.
+Appium MCP ile uygulamanın ekran yapısı ve elemanları incelendi; ürün seçimi ve sepet akışı keşfedilerek otomasyon senaryosu oluşturuldu. MCP, testlerin yerine geçmez: doğrulamalar Maven üzerinden çalışan Appium testiyle yapılır.
+
+## Notlar
+
+- Çalıştırmadan önce testin kullandığı cihaz adı, uygulama yolu/paketi ve Appium adresinin kendi ortamına uyduğunu kontrol et.
+- `noReset=true` kullanıldığında sepet önceki çalışmadan dolu kalabilir. Testi tekrarlarken uygulamanın başlangıç durumunu kontrol et.
+- `target/`, yerel IDE ayarları ve gizli bilgiler Git deposuna eklenmemelidir.
